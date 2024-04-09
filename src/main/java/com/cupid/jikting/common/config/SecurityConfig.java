@@ -3,6 +3,7 @@ package com.cupid.jikting.common.config;
 import com.cupid.jikting.common.filter.ExceptionHandlerFilter;
 import com.cupid.jikting.common.jwt.filter.JwtAuthenticationProcessingFilter;
 import com.cupid.jikting.common.jwt.service.JwtService;
+import com.cupid.jikting.common.repository.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.cupid.jikting.common.repository.JwtRepository;
 import com.cupid.jikting.member.filter.CustomJsonUsernamePasswordAuthenticationFilter;
 import com.cupid.jikting.member.handler.*;
@@ -75,7 +76,9 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2LoginSuccessHandler)
                         .failureHandler(oAuth2LoginFailureHandler)
-                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)))
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                        .authorizationEndpoint()
+                        .authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository()))
                 .logout(logout -> logout
                         .logoutUrl("/members/logout")
                         .addLogoutHandler(customLogoutHandler())
@@ -146,5 +149,10 @@ public class SecurityConfig {
     @Bean
     public ExceptionHandlerFilter exceptionHandlerFilter() {
         return new ExceptionHandlerFilter(objectMapper);
+    }
+
+    @Bean
+    public HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository() {
+        return new HttpCookieOAuth2AuthorizationRequestRepository();
     }
 }
